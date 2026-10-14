@@ -1,4 +1,4 @@
-/* :Solve-exp - Civic AI Complaint Triage & Dispatch Platform */
+/* Solve-exp / GRIV Express - Civic AI Complaint Triage & Dispatch Platform */
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
@@ -7,13 +7,14 @@
   --bg-card: rgba(18, 27, 48, 0.7);
   --bg-card-hover: rgba(24, 37, 65, 0.85);
   --bg-glass: rgba(14, 21, 38, 0.65);
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-bright: rgba(255, 255, 255, 0.18);
-  --border-glow: rgba(99, 102, 241, 0.3);
+  --border-subtle: rgba(255, 255, 255, 0.12);
+  --border-bright: rgba(255, 255, 255, 0.22);
+  --border-glow: rgba(99, 102, 241, 0.35);
 
-  --text-main: #f1f5f9;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
+  /* WCAG AAA Compliant Contrast */
+  --text-main: #f8fafc;
+  --text-muted: #cbd5e1;
+  --text-dim: #94a3b8;
 
   --accent-primary: #6366f1;
   --accent-cyan: #06b6d4;
@@ -21,18 +22,18 @@
 
   /* Severity Color System */
   --sev-green-text: #34d399;
-  --sev-green-bg: rgba(16, 185, 129, 0.12);
-  --sev-green-border: rgba(16, 185, 129, 0.35);
+  --sev-green-bg: rgba(16, 185, 129, 0.14);
+  --sev-green-border: rgba(16, 185, 129, 0.4);
   --sev-green-glow: 0 0 24px rgba(16, 185, 129, 0.25);
 
   --sev-yellow-text: #fbbf24;
-  --sev-yellow-bg: rgba(245, 158, 11, 0.12);
-  --sev-yellow-border: rgba(245, 158, 11, 0.35);
+  --sev-yellow-bg: rgba(245, 158, 11, 0.14);
+  --sev-yellow-border: rgba(245, 158, 11, 0.4);
   --sev-yellow-glow: 0 0 24px rgba(245, 158, 11, 0.25);
 
   --sev-red-text: #f87171;
-  --sev-red-bg: rgba(239, 68, 68, 0.15);
-  --sev-red-border: rgba(239, 68, 68, 0.45);
+  --sev-red-bg: rgba(239, 68, 68, 0.18);
+  --sev-red-border: rgba(239, 68, 68, 0.5);
   --sev-red-glow: 0 0 30px rgba(239, 68, 68, 0.4);
 
   /* Department Colors */
@@ -51,6 +52,58 @@
 
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* Accessibility: Screen Reader Only Utility */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Accessibility: Skip Link */
+.skip-link {
+  position: absolute;
+  top: -60px;
+  left: 1rem;
+  background: var(--accent-primary);
+  color: #ffffff;
+  padding: 0.65rem 1.25rem;
+  z-index: 1000;
+  text-decoration: none;
+  font-weight: 700;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  transition: top 0.2s ease-in-out;
+}
+.skip-link:focus {
+  top: 0;
+  outline: 3px solid #ffffff;
+}
+
+/* Accessibility: High-contrast focus rings for keyboard navigation */
+button:focus-visible,
+a:focus-visible,
+textarea:focus-visible,
+input:focus-visible {
+  outline: 3px solid #818cf8 !important;
+  outline-offset: 3px !important;
+}
+
+/* Accessibility: Respect Reduced Motion Preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 * {
