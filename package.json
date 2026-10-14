@@ -1,0 +1,19 @@
+{
+  "name": "solve-exp",
+  "version": "1.0.0",
+  "description": "Solve-exp / GRIV Express - South Indian Languages & Hindi Citizen Grievance AI Triage Dispatch System",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve -l 3000 .",
+    "test": "node test_classifier.js"
+  },
+  "keywords": [
+    "solve-exp",
+    "citizen-complaints",
+    "ai-triage",
+    "multilingual",
+    "nlp"
+  ],
+  "author": "",
+  "license": "MIT"
+}

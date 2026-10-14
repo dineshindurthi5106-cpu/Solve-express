@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRIV Express | Solve-exp Civic AI Dispatch</title>
+  <meta name="description" content="GRIV Express / Solve-exp - Municipal AI agent platform that ingests citizen complaints in South Indian languages and Hindi, classifies departments, rates severity 1-5, synthesizes 15-word summaries, and delivers empathetic citizen responses in their native dialect.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header class="header">
+    <div class="header-container">
+      <a href="#" class="brand" title="Solve-exp Portal">
+        <div class="brand-logo-mark">⚡</div>
+        <div class="brand-name">Solve<span>-exp</span></div>
+        <span class="brand-tag">CIVIC AI DISPATCH</span>
+      </a>
+
+      <div class="header-actions">
+        <div class="status-indicator">
+          <span class="pulse-dot"></span>
+          <span>AI AGENT ONLINE</span>
+        </div>
+        <button id="btnSettingsModal" class="btn-icon" title="API Settings & Config" aria-label="Settings">
+          ⚙️
+        </button>
+        <button id="btnInfoModal" class="btn-icon" title="Municipal Severity Matrix" aria-label="Information">
+          ℹ️
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-wrapper">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-badge">
+        <span>🇮🇳 SOUTH INDIAN LANGUAGES & HINDI CIVIC GRIEVANCE SYSTEM</span>
+      </div>
+      <h1 class="hero-title">
+        GRIV <span class="highlight">Express</span>
+      </h1>
+
+      <div class="hero-stats">
+        <div class="stat-pill">
+          <span>Supported Depts:</span>
+          <strong>Water · Roads · Sanitation · Electricity · Health · Police · Other</strong>
+        </div>
+        <div class="stat-pill">
+          <span>Severity Scale:</span>
+          <strong>1 to 5 (5 = Life-Threatening)</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- Complaint Intake Studio -->
+    <section class="intake-card">
+      <div class="intake-header">
+        <div class="intake-title">
+          <span class="intake-title-icon">✍️</span>
+          <span>Citizen Complaint Intake Studio</span>
+        </div>
+        <div class="preset-strip">
+          <span class="preset-label">Test In Native Languages:</span>
+          <button class="preset-btn" data-preset="sample-hi-3">🇮🇳 Hindi (हिन्दी)</button>
+          <button class="preset-btn" data-preset="sample-ta-5">🇮🇳 Tamil (தமிழ்)</button>
+          <button class="preset-btn" data-preset="sample-te-3">🇮🇳 Telugu (తెలుగు)</button>
+          <button class="preset-btn" data-preset="sample-kn-5">🇮🇳 Kannada (ಕನ್ನಡ)</button>
+          <button class="preset-btn" data-preset="sample-ml-5">🇮🇳 Malayalam (മലയാളം)</button>
+        </div>
+      </div>
+
+      <div class="textarea-container">
+        <textarea 
+          id="complaintInput" 
+          class="complaint-textarea" 
+          placeholder="Enter or paste citizen grievance in Hindi, Tamil, Telugu, Kannada, or Malayalam (e.g. हमारे इलाके में पानी की पाइपलाइन फूट गई है... / பள்ளி அருகே உயர்மின்னழுத்த மின்கம்பி அறுந்து விழுந்துள்ளது... / మా కాలనీలో మెయిన్ పైప్‌లైన్ పగిలిపోయింది...)..." 
+          rows="4"></textarea>
+        
+        <div class="textarea-footer">
+          <span id="detectedLangPreview">🌐 Auto-detecting dialect & script...</span>
+          <span id="charCount">0 characters</span>
+        </div>
+      </div>
+
+      <div class="intake-actions">
+        <div class="action-left">
+          <button id="btnClearInput" class="btn-secondary" title="Clear Textarea">
+            <span>🗑️ Clear</span>
+          </button>
+          <button id="btnRandomPreset" class="btn-secondary" title="Load Random Scenario">
+            <span>🎲 Random Case</span>
+          </button>
+        </div>
+
+        <button id="btnProcessComplaint" class="btn-primary">
+          <span>⚡ Triage & Classify Complaint</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- AI Agent Pipeline Telemetry (Visible during execution) -->
+    <div id="pipelineOverlay" class="pipeline-overlay">
+      <div class="pipeline-header">
+        <div class="pipeline-title">
+          <div class="spinner"></div>
+          <span>CIVIC AI MULTI-AGENT INFERENCE ENGINE EXECUTING...</span>
+        </div>
+        <span id="pipelineTimer" class="stat-pill">0.0s elapsed</span>
+      </div>
+      <div class="pipeline-steps">
+        <div id="step-lang" class="pipeline-step">
+          <span>1. Dialect & Script Identification</span>
+        </div>
+        <div id="step-dept" class="pipeline-step">
+          <span>2. Department Routing Vector</span>
+        </div>
+        <div id="step-sev" class="pipeline-step">
+          <span>3. Severity Matrix (1-5 Life Threat)</span>
+        </div>
+        <div id="step-sum" class="pipeline-step">
+          <span>4. 15-Word Executive Briefing</span>
+        </div>
+        <div id="step-rep" class="pipeline-step">
+          <span>5. Empathetic Citizen Protocol</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 RESULT CARDS SECTION -->
+    <section id="resultsSection" class="results-section">
+      <div class="results-header">
+        <div>
+          <div class="results-eyebrow">MUNICIPAL DISPATCH TRIAGE REPORT</div>
+          <h2 class="results-heading">
+            <span>AI Incident Assessment</span>
+            <span id="resultsEngineTag" class="card-header-tag">Local Multi-Agent</span>
+          </h2>
+        </div>
+        <div class="results-meta-pill">
+          <span id="metaLangFlag">🌐</span>
+          <span id="metaLangName">Detected: English</span>
+          <span style="opacity: 0.3;">|</span>
+          <span id="metaTimestamp">Just Now</span>
+        </div>
+      </div>
+
+      <!-- THE 4 CARDS AS REQUIRED BY USER -->
+      <div class="cards-grid">
+
+        <!-- CARD 1: DEPARTMENT (BIG BADGE) -->
+        <article id="cardDepartment" class="triage-card card-dept dept-Water">
+          <div class="card-top">
+            <div class="card-num-eyebrow">
+              <span class="card-num-badge">1</span>
+              <span>Jurisdictional Department</span>
+            </div>
+            <span id="deptRouteCode" class="card-header-tag">DIV-WAT-01</span>
+          </div>
+
+          <div class="card-body">
+            <div class="dept-badge-hero">
+              <div id="deptIconBox" class="dept-icon-box">💧</div>
+              <div class="dept-info">
+                <div id="deptNameBig" class="dept-name-big">Water</div>
+                <div class="dept-category">Municipal Public Utilities</div>
+              </div>
+            </div>
+
+            <div class="dept-meta-grid">
+              <div class="dept-meta-item">
+                <div class="dept-meta-label">Assigned Division</div>
+                <div id="deptDivisionName" class="dept-meta-val">Water Works & Sewage</div>
+              </div>
+              <div class="dept-meta-item">
+                <div class="dept-meta-label">Emergency Desk</div>
+                <div id="deptHotline" class="dept-meta-val">1800-WATER-SOS</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <span>Direct Jurisdictional Escalation</span>
+            <span id="deptConfidence">Score: 98% Match</span>
+          </div>
+        </article>
+
+        <!-- CARD 2: SEVERITY (COLOR-CODED 1-2 GREEN, 3-4 YELLOW, 5 RED) -->
+        <article id="cardSeverity" class="triage-card card-sev severity-yellow">
+          <div class="card-top">
+            <div class="card-num-eyebrow">
+              <span class="card-num-badge">2</span>
+              <span>Incident Severity Rating</span>
+            </div>
+            <span id="sevSlaBadge" class="card-header-tag">4-8 Hours Dispatch</span>
+          </div>
+
+          <div class="card-body">
+            <div class="sev-badge-hero">
+              <div class="sev-score-wrapper">
+                <span id="sevScoreNumber" class="sev-score-number">3</span>
+                <span class="sev-score-max">/ 5</span>
+              </div>
+              <div class="sev-label-block">
+                <div id="sevStatusPill" class="sev-status-pill">Moderate Disruption</div>
+                <div id="sevThreatDesc" class="sev-sla-tag">Standard Community Hazard</div>
+              </div>
+            </div>
+
+            <div class="sev-meter-container">
+              <div class="sev-meter-label">
+                <span>Threat Gauge (1 to 5)</span>
+                <span id="sevLevelDetail">5 = Life-Threatening</span>
+              </div>
+              <div class="sev-meter-bars">
+                <div id="meterStep1" class="sev-meter-step filled"></div>
+                <div id="meterStep2" class="sev-meter-step filled"></div>
+                <div id="meterStep3" class="sev-meter-step filled"></div>
+                <div id="meterStep4" class="sev-meter-step"></div>
+                <div id="meterStep5" class="sev-meter-step"></div>
+              </div>
+            </div>
+
+            <div id="sevImpactBox" class="sev-desc-box">
+              Significant community service disruption requiring scheduled crew action.
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <span id="sevColorNote">Color Code: Yellow (Level 3-4)</span>
+            <span id="sevLifeThreatBadge">Risk Assessed</span>
+          </div>
+        </article>
+
+        <!-- CARD 3: SUMMARY (15-WORD MAX) -->
+        <article id="cardSummary" class="triage-card card-sum">
+          <div class="card-top">
+            <div class="card-num-eyebrow">
+              <span class="card-num-badge">3</span>
+              <span>Executive Briefing Summary</span>
+            </div>
+            <div id="wordCountBadge" class="word-count-badge" title="Guaranteed 15 words or fewer">
+              <span>✓</span>
+              <span id="wordCountNumber">13 / 15</span>
+              <span>Words Max</span>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="summary-quote-box">
+              <p id="summaryText" class="summary-text">
+                Major municipal water supply pipeline ruptured, cutting off drinking water to local residents.
+              </p>
+            </div>
+
+            <div class="summary-compliance-bar">
+              <div class="summary-tags">
+                <span id="summaryTag1" class="summary-tag">#water-crisis</span>
+                <span id="summaryTag2" class="summary-tag">#infrastructure</span>
+                <span id="summaryTag3" class="summary-tag">#priority-triage</span>
+              </div>
+              <button id="btnCopySummary" class="btn-pill" title="Copy Summary Text">
+                <span>📋 Copy Summary</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <span>Enforced Protocol: Max 15 words for mobile dispatch radios</span>
+            <span id="summaryWordStatus" style="color: #34d399;">Compliant (≤ 15)</span>
+          </div>
+        </article>
+
+        <!-- CARD 4: CITIZEN REPLY (EMPATHETIC IN COMPLAINT'S LANGUAGE) -->
+        <article id="cardReply" class="triage-card card-rep">
+          <div class="card-top">
+            <div class="card-num-eyebrow">
+              <span class="card-num-badge">4</span>
+              <span>Empathetic Citizen Reply</span>
+            </div>
+            <span id="replyDialectTag" class="card-header-tag">Target Dialect: Hindi</span>
+          </div>
+
+          <div class="card-body">
+            <div class="reply-lang-banner">
+              <div class="reply-lang-name">
+                <span id="replyFlag">🇮🇳</span>
+                <span id="replyLangTitle">Written in Hindi (Complaint's Original Language)</span>
+              </div>
+              <button id="btnSpeakReply" class="btn-pill" title="Read Aloud in Native Dialect via SpeechSynthesis">
+                <span>🔊 Listen</span>
+              </button>
+            </div>
+
+            <div class="reply-quote-box">
+              <p id="citizenReplyText" class="citizen-reply-text">
+                "आपकी असुविधा के लिए हमें गहरा खेद है; हमारी नगर निगम टीम को इस समस्या के शीघ्र समाधान हेतु निर्देशित कर दिया गया है।"
+              </p>
+            </div>
+
+            <div class="reply-actions-row">
+              <button id="btnCopyReply" class="btn-pill" title="Copy Citizen Response">
+                <span>📋 Copy Response</span>
+              </button>
+              <button id="btnToggleTranslation" class="btn-pill" title="Toggle English Translation for Staff">
+                <span>🌐 English Translation</span>
+              </button>
+              <button id="btnDispatchRecord" class="btn-pill" style="margin-left: auto; background: rgba(99, 102, 241, 0.25); color: #c7d2fe;" title="Log to Official Municipal Registry">
+                <span>📑 Log to Registry</span>
+              </button>
+            </div>
+
+            <div id="translationDrawer" class="translation-drawer">
+              <strong style="color: #cbd5e1; display: block; margin-bottom: 0.25rem;">Staff Reference (English):</strong>
+              <span id="translationText">We sincerely apologize for this disruption; our municipal crew has been scheduled to resolve it promptly.</span>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <span>Compassionate municipal acknowledgment protocol</span>
+            <span id="replySpeakerStatus">TTS Audio Ready</span>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Complaint Registry / Triage History -->
+    <section class="history-section">
+      <div class="history-header">
+        <div class="history-title">
+          <span>🏛️</span>
+          <span>Municipal Dispatch Registry</span>
+        </div>
+        <div class="history-filters">
+          <button class="filter-tab active" data-filter="All">All (<span id="countAll">0</span>)</button>
+          <button class="filter-tab" data-filter="Water">Water</button>
+          <button class="filter-tab" data-filter="Roads">Roads</button>
+          <button class="filter-tab" data-filter="Sanitation">Sanitation</button>
+          <button class="filter-tab" data-filter="Electricity">Electricity</button>
+          <button class="filter-tab" data-filter="Health">Health</button>
+          <button class="filter-tab" data-filter="Police">Police</button>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button id="btnExportJson" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;">
+            <span>📥 Export JSON</span>
+          </button>
+          <button id="btnClearHistory" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;">
+            <span>🧹 Clear</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>ID & Time</th>
+              <th>Language</th>
+              <th>Department</th>
+              <th>Severity</th>
+              <th>15-Word Summary</th>
+              <th>Citizen Reply (Native)</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Settings / Gemini Key Modal -->
+  <div id="modalSettings" class="modal-backdrop">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">⚙️ AI Engine Settings</div>
+        <button id="btnCloseSettings" class="btn-icon">✕</button>
+      </div>
+      <div class="input-group">
+        <label class="input-label" for="geminiApiKeyInput">
+          Google Gemini API Key (Optional)
+        </label>
+        <input 
+          type="password" 
+          id="geminiApiKeyInput" 
+          class="text-input" 
+          placeholder="AIzaSy... (leave blank for local multi-agent heuristics)">
+        <p class="modal-help">
+          By default, :Solve-exp uses its ultra-fast local multilingual heuristics engine (offline-ready, zero latency, guaranteed ≤ 15 words). If you enter a Gemini API Key, it will also utilize live Gemini LLM streaming inference.
+        </p>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button id="btnSaveSettings" class="btn-primary" style="padding: 0.6rem 1.25rem;">
+          Save Settings
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info / Severity Matrix Modal -->
+  <div id="modalInfo" class="modal-backdrop">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <div class="modal-title">ℹ️ Municipal Severity Matrix Guide</div>
+        <button id="btnCloseInfo" class="btn-icon">✕</button>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 1rem; font-size: 0.88rem; line-height: 1.6;">
+        <div style="padding: 0.85rem; border-radius: 8px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35);">
+          <strong style="color: #34d399;">🟢 Severity 1-2 (Green): Routine / Low Priority</strong>
+          <p style="color: #cbd5e1; margin-top: 0.25rem;">
+            Cosmetic requests, faint road markings, dirty signage, routine uncollected trash, standard potholes. Target resolution: 24 - 48 Hours.
+          </p>
+        </div>
+        <div style="padding: 0.85rem; border-radius: 8px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35);">
+          <strong style="color: #fbbf24;">🟡 Severity 3-4 (Yellow): Elevated / Urgent Hazard</strong>
+          <p style="color: #cbd5e1; margin-top: 0.25rem;">
+            Broken water mains, fallen live power lines, overflowing sewage entering homes, dengue epidemic hazard, main transit blockages. Target resolution: 1 - 8 Hours.
+          </p>
+        </div>
+        <div style="padding: 0.85rem; border-radius: 8px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.45);">
+          <strong style="color: #f87171;">🔴 Severity 5 (Red): Critical / Life-Threatening</strong>
+          <p style="color: #cbd5e1; margin-top: 0.25rem;">
+            Gas explosions, active armed shootings, unconscious/severely burned casualties, electrocution in flooded zones, structural collapses. Target emergency dispatch: 15 Minutes.
+          </p>
+        </div>
+      </div>
+      <div style="margin-top: 1.5rem; text-align: right;">
+        <button id="btnCloseInfoBottom" class="btn-secondary">Close Guide</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div>Solve-exp · GRIV Express Civic AI Incident Response & Triage Platform</div>
+    <div class="footer-links">
+      <a href="#complaintInput">Intake Studio</a>
+      <a href="#resultsSection">Triage Cards</a>
+      <a href="#historyTableBody">Dispatch Registry</a>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/samples.js"></script>
+  <script src="js/classifier.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
